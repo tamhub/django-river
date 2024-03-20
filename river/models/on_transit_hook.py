@@ -1,6 +1,11 @@
 from django.db import models
 from django.db.models import CASCADE
-from django.utils.translation import ugettext_lazy as _
+try:
+    # Try to import gettext_lazy for Django 3.0 and newer
+    from django.utils.translation import gettext_lazy as _
+except ImportError:
+    # Fall back to ugettext_lazy for older Django versions
+    from django.utils.translation import ugettext_lazy as _
 
 from river.models import TransitionMeta, Transition
 from river.models.hook import Hook

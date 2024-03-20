@@ -17,12 +17,12 @@ setup(
     author='Ahmet DAL',
     author_email='ceahmetdal@gmail.com',
     packages=find_packages(),
-    url='https://github.com/javrasya/django-river.git',
+    url='https://github.com/tamhub/django-river.git',
     description='Django Workflow Library',
     long_description=long_description,
     install_requires=[
         "Django",
-        "django-mptt==0.9.1",
+        "django-mptt==0.16.0",
         "django-cte==1.1.4",
         "django-codemirror2==0.2"
     ],

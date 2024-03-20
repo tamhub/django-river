@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Function',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('name', models.CharField(max_length=200, unique=True, verbose_name='Function Name')),
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OnApprovedHook',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('object_id', models.CharField(blank=True, max_length=200, null=True)),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OnCompleteHook',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('object_id', models.CharField(blank=True, max_length=200, null=True)),
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='OnTransitHook',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('object_id', models.CharField(blank=True, max_length=200, null=True)),
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='State',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('slug', models.SlugField(blank=True, null=True, unique=True)),
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Transition',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('object_id', models.CharField(max_length=50, verbose_name='Related Object')),
@@ -104,7 +104,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TransitionApproval',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('object_id', models.CharField(max_length=50, verbose_name='Related Object')),
@@ -122,7 +122,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TransitionApprovalMeta',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('priority', models.IntegerField(default=0, null=True, verbose_name='Priority')),
@@ -138,7 +138,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TransitionMeta',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('destination_state', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='transition_meta_as_destination', to='river.State', verbose_name='Destination State')),
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Workflow',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_created', models.DateTimeField(auto_now_add=True, null=True, verbose_name='Date Created')),
                 ('date_updated', models.DateTimeField(auto_now=True, null=True, verbose_name='Date Updated')),
                 ('field_name', models.CharField(max_length=200, verbose_name='Field Name')),

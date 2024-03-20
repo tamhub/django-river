@@ -11,6 +11,7 @@ LOGGER = logging.getLogger(__name__)
 class RiverApp(AppConfig):
     name = 'river'
     label = 'river'
+    default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self):
 
@@ -53,7 +54,7 @@ class RiverApp(AppConfig):
         registered_admin = admin.site._registry.get(model, None)
         if registered_admin:
             if OnApprovedHookInline not in registered_admin.inlines:
-                registered_admin.inlines = list(set(registered_admin.inlines + [OnApprovedHookInline, OnTransitHookInline, OnCompleteHookInline]))
+                registered_admin.inlines = list(set(list(registered_admin.inlines) + [OnApprovedHookInline, OnTransitHookInline, OnCompleteHookInline]))
                 registered_admin.readonly_fields = list(set(list(registered_admin.readonly_fields) + list(workflow_registry.get_class_fields(model))))
                 admin.site._registry[model] = registered_admin
         else:
