@@ -3,7 +3,12 @@ import logging
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models import PROTECT
-from django.utils.translation import ugettext_lazy as _
+try:
+    # Try to import gettext_lazy for Django 3.0 and newer
+    from django.utils.translation import gettext_lazy as _
+except ImportError:
+    # Fall back to ugettext_lazy for older Django versions
+    from django.utils.translation import ugettext_lazy as _
 
 from river.models import Workflow, GenericForeignKey, BaseModel
 from river.models.function import Function

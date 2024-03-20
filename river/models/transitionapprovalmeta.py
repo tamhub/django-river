@@ -3,7 +3,12 @@ from __future__ import unicode_literals
 from django.db import models, transaction
 from django.db.models import PROTECT
 from django.db.models.signals import post_save, pre_delete
-from django.utils.translation import ugettext_lazy as _
+try:
+    # Try to import gettext_lazy for Django 3.0 and newer
+    from django.utils.translation import gettext_lazy as _
+except ImportError:
+    # Fall back to ugettext_lazy for older Django versions
+    from django.utils.translation import ugettext_lazy as _
 
 from river.config import app_config
 from river.models import Workflow

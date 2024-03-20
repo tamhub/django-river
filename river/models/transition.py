@@ -10,7 +10,12 @@ except ImportError:
     from django.contrib.contenttypes.generic import GenericForeignKey
 
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+try:
+    # Try to import gettext_lazy for Django 3.0 and newer
+    from django.utils.translation import gettext_lazy as _
+except ImportError:
+    # Fall back to ugettext_lazy for older Django versions
+    from django.utils.translation import ugettext_lazy as _
 
 from river.models.base_model import BaseModel
 from river.models.managers.transitionapproval import TransitionApprovalManager
