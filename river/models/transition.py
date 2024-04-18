@@ -47,10 +47,10 @@ class Transition(BaseModel):
     object_id = models.CharField(max_length=50, verbose_name=_('Related Object'))
     workflow_object = GenericForeignKey('content_type', 'object_id')
 
-    meta = models.ForeignKey(TransitionMeta, verbose_name=_('Meta'), related_name="transitions", on_delete=PROTECT)
-    workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"), related_name='transitions', on_delete=PROTECT)
-    source_state = models.ForeignKey(State, verbose_name=_("Source State"), related_name='transition_as_source', on_delete=PROTECT)
-    destination_state = models.ForeignKey(State, verbose_name=_("Destination State"), related_name='transition_as_destination', on_delete=PROTECT)
+    meta = models.ForeignKey(TransitionMeta, verbose_name=_('Meta'), related_name="transitions", on_delete=CASCADE)
+    workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"), related_name='transitions', on_delete=CASCADE)
+    source_state = models.ForeignKey(State, verbose_name=_("Source State"), related_name='transition_as_source', on_delete=CASCADE)
+    destination_state = models.ForeignKey(State, verbose_name=_("Destination State"), related_name='transition_as_destination', on_delete=CASCADE)
 
     status = models.CharField(_('Status'), choices=STATUSES, max_length=100, default=PENDING)
 
