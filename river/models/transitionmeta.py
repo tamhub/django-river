@@ -1,7 +1,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.db.models import PROTECT
+from django.db.models import PROTECT, CASCADE
+
 try:
     # Try to import gettext_lazy for Django 3.0 and newer
     from django.utils.translation import gettext_lazy as _
@@ -20,9 +21,9 @@ class TransitionMeta(BaseModel):
         verbose_name_plural = _("Transition Meta")
         unique_together = [('workflow', 'source_state', 'destination_state')]
 
-    workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"), related_name='transition_metas', on_delete=PROTECT)
-    source_state = models.ForeignKey(State, verbose_name=_("Source State"), related_name='transition_meta_as_source', on_delete=PROTECT)
-    destination_state = models.ForeignKey(State, verbose_name=_("Destination State"), related_name='transition_meta_as_destination', on_delete=PROTECT)
+    workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"), related_name='transition_metas', on_delete=CASCADE)
+    source_state = models.ForeignKey(State, verbose_name=_("Source State"), related_name='transition_meta_as_source', on_delete=CASCADE)
+    destination_state = models.ForeignKey(State, verbose_name=_("Destination State"), related_name='transition_meta_as_destination', on_delete=CASCADE)
 
     def __str__(self):
         return 'Field Name:%s, %s -> %s' % (
