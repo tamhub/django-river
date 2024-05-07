@@ -24,6 +24,7 @@ class TransitionMeta(BaseModel):
     workflow = models.ForeignKey(Workflow, verbose_name=_("Workflow"), related_name='transition_metas', on_delete=CASCADE)
     source_state = models.ForeignKey(State, verbose_name=_("Source State"), related_name='transition_meta_as_source', on_delete=CASCADE)
     destination_state = models.ForeignKey(State, verbose_name=_("Destination State"), related_name='transition_meta_as_destination', on_delete=CASCADE)
+    name = models.CharField(max_length=255, verbose_name=_("Name"), null=True, blank=True)
 
     def __str__(self):
         return 'Field Name:%s, %s -> %s' % (
