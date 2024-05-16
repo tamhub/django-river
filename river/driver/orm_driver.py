@@ -10,36 +10,10 @@ from river.models import TransitionApproval, PENDING
 class OrmDriver(RiverDriver):
 
     def get_available_approvals(self, as_user):
-        those_with_max_priority = With(
-            TransitionApproval.objects.filter(
-                workflow=self.workflow, status=PENDING
-            ).values(
-                'workflow', 'object_id', 'transition'
-            ).annotate(min_priority=Min('priority'))
-        )
+        # Get authorized transition approval metadata
+        authorized_approvals = self._authorized_approvals(as_user)
 
-        workflow_objects = With(
-            self.wokflow_object_class.objects.all(),
-            name="workflow_object"
-        )
-
-        approvals_with_max_priority = those_with_max_priority.join(
-            self._authorized_approvals(as_user),
-            workflow_id=those_with_max_priority.col.workflow_id,
-            object_id=those_with_max_priority.col.object_id,
-            transition_id=those_with_max_priority.col.transition_id,
-        ).with_cte(
-            those_with_max_priority
-        ).annotate(
-            object_id_as_str=Cast('object_id', CharField(max_length=200)),
-            min_priority=those_with_max_priority.col.min_priority
-        ).filter(min_priority=F("priority"))
-
-        return workflow_objects.join(
-            approvals_with_max_priority, object_id_as_str=Cast(workflow_objects.col.pk, CharField(max_length=200))
-        ).with_cte(
-            workflow_objects
-        ).filter(transition__source_state=getattr(workflow_objects.col, self.field_name + "_id"))
+        return authorized_approvals
 
     def _authorized_approvals(self, as_user):
         group_q = Q()
@@ -53,14 +27,14 @@ class OrmDriver(RiverDriver):
         permission_q = Q()
         for p in permissions:
             label, codename = p.split('.')
-            permission_q = permission_q | Q(permissions__content_type__app_label=label,
-                                            permissions__codename=codename)
+            permission_q = permission_q | Q(permissions__content_type__app_label=label, permissions__codename=codename)
 
-        return TransitionApproval.objects.filter(
-            Q(workflow=self.workflow, status=PENDING) &
+        from river.models import TransitionApprovalMeta
+        return TransitionApprovalMeta.objects.filter(
+            Q(workflow=self.workflow) &
             (
-                    (Q(transactioner__isnull=True) | Q(transactioner=as_user)) &
                     (Q(permissions__isnull=True) | permission_q) &
                     (Q(groups__isnull=True) | group_q)
             )
         )
+
