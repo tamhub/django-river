@@ -30,7 +30,10 @@ class InstanceWorkflowObject:
     def initialize_approvals(self):
         if self.initialized or not self.workflow:
             return
-        if self.workflow.transition_approvals.filter(workflow_object=self.workflow_object).exists():
+        if self.workflow.transition_approvals.filter(
+          object_id=self.workflow_object.pk,
+          content_type=self.content_type
+        ).exists():
             return
         self._create_transition_approvals()
         self.initialized = True
@@ -52,24 +55,26 @@ class InstanceWorkflowObject:
             iteration += 1
 
     def _create_transition_with_approvals(self, transition_meta, iteration):
-        transition = Transition.objects.create(
-            workflow=self.workflow,
-            workflow_object=self.workflow_object,
-            source_state=transition_meta.source_state,
-            destination_state=transition_meta.destination_state,
-            meta=transition_meta,
-            iteration=iteration
+      transition = Transition.objects.create(
+        workflow=self.workflow,
+        workflow_object=self.workflow_object,
+        source_state=transition_meta.source_state,
+        destination_state=transition_meta.destination_state,
+        meta=transition_meta,
+        iteration=iteration
+      )
+      for transition_approval_meta in transition_meta.transition_approval_meta.all():
+        transition_approval, created = TransitionApproval.objects.get_or_create(
+          workflow=self.workflow,
+          object_id=self.workflow_object.pk,
+          content_type=self.content_type,
+          transition=transition,
+          priority=transition_approval_meta.priority,
+          meta=transition_approval_meta
         )
-        for transition_approval_meta in transition_meta.transition_approval_meta.all():
-            transition_approval = TransitionApproval.objects.create(
-                workflow=self.workflow,
-                workflow_object=self.workflow_object,
-                transition=transition,
-                priority=transition_approval_meta.priority,
-                meta=transition_approval_meta
-            )
-            transition_approval.permissions.add(*transition_approval_meta.permissions.all())
-            transition_approval.groups.add(*transition_approval_meta.groups.all())
+        if created:
+          transition_approval.permissions.add(*transition_approval_meta.permissions.all())
+          transition_approval.groups.add(*transition_approval_meta.groups.all())
 
     @property
     def on_initial_state(self):
@@ -90,8 +95,11 @@ class InstanceWorkflowObject:
 
     @property
     def recent_approval(self):
-        return getattr(self.workflow_object, self.field_name + "_transition_approvals") \
-            .filter(transaction_date__isnull=False).latest('transaction_date')
+      approvals = getattr(self.workflow_object, self.field_name + "_transition_approvals").filter(
+        transaction_date__isnull=False)
+      if approvals.exists():
+        return approvals.latest('transaction_date')
+      return None
 
     @transaction.atomic
     def jump_to(self, state):
@@ -159,7 +167,6 @@ class InstanceWorkflowObject:
         self._process_approval(available_approvals.first(), as_user, next_state)
 
     def _process_approval(self, approval, as_user, next_state):
-        # check if TransitionApproval is available and create it if not
         approval, _ = TransitionApproval.objects.get_or_create(
             workflow=self.workflow,
             content_type=self._content_type,
@@ -178,7 +185,7 @@ class InstanceWorkflowObject:
         approval.status = APPROVED
         approval.transactioner = as_user
         approval.transaction_date = timezone.now()
-        approval.previous = self.recent_approval
+        approval.previous = self.recent_approval if self.recent_approval else None
         approval.save()
 
         if next_state:
