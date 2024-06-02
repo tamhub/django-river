@@ -13,6 +13,7 @@ from river.models import (
 from river.signals import ApproveSignal, TransitionSignal, OnCompleteSignal
 from river.utils.error_code import ErrorCode
 from river.utils.exceptions import RiverException
+from django.core.exceptions import ValidationError
 
 LOGGER = logging.getLogger(__name__)
 
@@ -141,25 +142,23 @@ class InstanceWorkflowObject:
     def get_available_approvals(self, as_user=None, destination_state=None):
         approvals = self.class_workflow.get_available_approvals(as_user)
         if destination_state:
-            approvals = approvals.filter(transition__destination_state=destination_state)
+            approvals = approvals.filter(transition_meta__destination_state=destination_state)
+        else:
+            approvals = approvals.filter(transition_meta__source_state=self.get_state())
         return approvals
 
     @transaction.atomic
     def approve(self, as_user, next_state=None):
         available_approvals = self.get_available_approvals(as_user=as_user)
         if not available_approvals.exists():
-            raise RiverException(ErrorCode.NO_AVAILABLE_NEXT_STATE_FOR_USER,
-                                 "There is no available approval for the user.")
+            raise ValidationError("There is no available approval for the user.")
         if next_state:
             available_approvals = available_approvals.filter(transition_meta__destination_state=next_state)
             if not available_approvals.exists():
                 available_states = self.get_available_states(as_user)
-                raise RiverException(
-                    ErrorCode.INVALID_NEXT_STATE_FOR_USER,
-                    "Invalid state is given(%s). Valid states are %s" % (
-                        next_state, ','.join(map(str, available_states))
-                    )
-                )
+                raise ValidationError("Invalid state is given(%s). Valid states are %s" % (
+                    next_state, ','.join(map(str, available_states))
+                ))
         if available_approvals.count() > 1 and not next_state:
             raise RiverException(ErrorCode.NEXT_STATE_IS_REQUIRED,
                                  "State must be given when there are multiple states for destination")
