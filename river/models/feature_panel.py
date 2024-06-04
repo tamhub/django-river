@@ -4,9 +4,10 @@ from django.utils.translation import gettext_lazy as _
 
 class FeatureSetting(models.Model):
     class FeatureChoices(models.TextChoices):
-        LOGO = 'logo', _('Logo')
         USERNAME_COLUMN = 'username_column', _('Username Column')
         DATABASE_VISIBILITY = 'database_visibility', _('Database Visibility')
+        Transition_History_Display = 'transition_history_display', _('Transition History Display')
+
         # Add more features in the future
 
     feature = models.CharField(
