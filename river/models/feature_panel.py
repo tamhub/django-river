@@ -6,7 +6,7 @@ class FeatureSetting(models.Model):
     class FeatureChoices(models.TextChoices):
         USERNAME_COLUMN = 'username_column', _('Username Column')
         DATABASE_VISIBILITY = 'database_visibility', _('Database Visibility')
-        Transition_History_Display = 'transition_history_display', _('Transition History Display')
+        TRANSITION_HISTORY_DISPLAY = 'transition_history_display', _('Transition History Display')
 
         # Add more features in the future
 
