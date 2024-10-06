@@ -29,13 +29,15 @@ class SignalHandler:
 
     def execute_hooks(self, hook_model, when, transition_approval_field):
         # TODO: Implement this
-        # hooks = hook_model.objects.filter(
-        #     (Q(object_id__isnull=True) | Q(object_id=self.workflow_object.pk, content_type=self.content_type)) &
-        #     (Q(**{transition_approval_field: self.transition_approval}) | Q(**{transition_approval_field: None})) &
-        #     Q(workflow__field_name=self.field_name, hook_type=when)
-        # )
-        # for hook in hooks:
-        #     hook.execute(self.get_context(when))
+        print("I AM RUNNING ... ... PRINT")
+        LOGGER.debug("I AM RUNNING ... ...LOGGER")
+        hooks = hook_model.objects.filter(
+            (Q(object_id__isnull=True) | Q(object_id=self.workflow_object.pk, content_type=self.content_type)) &
+            (Q(**{transition_approval_field: self.transition_approval}) | Q(**{transition_approval_field: None})) &
+            Q(workflow__field_name=self.field_name, hook_type=when)
+        )
+        for hook in hooks:
+            hook.execute(self.get_context(when))
         pass
 
     def get_context(self, when):
