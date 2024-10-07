@@ -42,4 +42,5 @@ class Hook(BaseModel):
         try:
             self.callback_function.get()(context)
         except Exception as e:
+            print(e)
             LOGGER.exception(e)
