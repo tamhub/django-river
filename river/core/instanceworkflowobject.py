@@ -56,7 +56,7 @@ class InstanceWorkflowObject:
             iteration += 1
 
     def _create_transition_with_approvals(self, transition_meta, iteration):
-      transition = Transition.objects.create(
+      transition, _ = Transition.objects.get_or_create(
         workflow=self.workflow,
         workflow_object=self.workflow_object,
         source_state=transition_meta.source_state,
