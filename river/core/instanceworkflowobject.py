@@ -177,20 +177,30 @@ class InstanceWorkflowObject:
         self._process_approval(available_approvals.first(), as_user, next_state)
 
     def _process_approval(self, approval, as_user, next_state):
-        approval, _ = TransitionApproval.objects.get_or_create(
-            workflow=self.workflow,
-            content_type=self._content_type,
-            object_id=self.workflow_object.pk,
-            meta=approval,
-            status=PENDING,
-            transition=Transition.objects.get_or_create(
+        transition = Transition.objects.filter(
                 content_type=self._content_type,
                 object_id=self.workflow_object.pk,
                 meta=approval.transition_meta,
                 workflow=self.workflow,
                 source_state=approval.transition_meta.source_state,
                 destination_state=approval.transition_meta.destination_state,
-            )[0]
+            ).last()
+        if not transition:
+            transition = Transition.objects.create(
+                content_type=self._content_type,
+                object_id=self.workflow_object.pk,
+                meta=approval.transition_meta,
+                workflow=self.workflow,
+                source_state=approval.transition_meta.source_state,
+                destination_state=approval.transition_meta.destination_state,
+            )
+        approval, _ = TransitionApproval.objects.get_or_create(
+            workflow=self.workflow,
+            content_type=self._content_type,
+            object_id=self.workflow_object.pk,
+            meta=approval,
+            status=PENDING,
+            transition=transition
         )
         approval.status = APPROVED
         approval.transactioner = as_user
@@ -352,3 +362,4 @@ class InstanceWorkflowObject:
 
     def set_state(self, state):
         setattr(self.workflow_object, self.field_name, state)
+    
