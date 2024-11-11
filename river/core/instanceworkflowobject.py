@@ -310,7 +310,18 @@ class InstanceWorkflowObject:
             iteration += 1
 
     def _create_cycled_transition(self, old_transition, iteration):
-        return Transition.objects.create(
+        transition = Transition.objects.filter(
+            source_state=old_transition.source_state,
+            destination_state=old_transition.destination_state,
+            workflow=old_transition.workflow,
+            object_id=old_transition.workflow_object.pk,
+            content_type=old_transition.content_type,
+            status=PENDING,
+            iteration=iteration,
+            meta=old_transition.meta
+        ).last()
+        if not transition:
+            transition = Transition.objects.create(
             source_state=old_transition.source_state,
             destination_state=old_transition.destination_state,
             workflow=old_transition.workflow,
@@ -320,6 +331,7 @@ class InstanceWorkflowObject:
             iteration=iteration,
             meta=old_transition.meta
         )
+        return transition
 
     def _create_cycled_approvals(self, old_transition, cycled_transition):
         for old_approval in old_transition.transition_approvals.all():
