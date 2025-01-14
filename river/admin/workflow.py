@@ -22,7 +22,7 @@ class WorkflowForm(forms.ModelForm):
 
     class Meta:
         model = Workflow
-        fields = ('workflow', 'initial_state')
+        fields = ('workflow', 'initial_state', 'title')
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.get("instance", None)
