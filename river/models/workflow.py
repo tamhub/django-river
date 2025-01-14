@@ -18,7 +18,6 @@ class Workflow(BaseModel):
         app_label = "river"
         verbose_name = _("Workflow")
         verbose_name_plural = _("Workflows")
-        unique_together = [("content_type", "field_name")]
 
     objects = WorkflowManager()
     title = models.CharField(_("Title"), max_length=100, null=True, blank=True)

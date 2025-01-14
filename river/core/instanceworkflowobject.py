@@ -24,7 +24,10 @@ class InstanceWorkflowObject:
         self.field_name = field_name
         self.class_workflow = getattr(workflow_object.__class__.river, field_name)
         self.content_type = app_config.CONTENT_TYPE_CLASS.objects.get_for_model(workflow_object)
-        self.workflow = Workflow.objects.filter(content_type=self.content_type, field_name=field_name).first()
+        if getattr(workflow_object, "workflow_obj", None):
+            self.workflow = workflow_object.workflow_obj
+        else:
+            self.workflow = Workflow.objects.filter(content_type=self.content_type, field_name=field_name).first()
         self.initialized = False
 
     @transaction.atomic
