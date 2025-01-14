@@ -39,4 +39,4 @@ class Workflow(BaseModel):
         return self.content_type, self.field_name
 
     def __str__(self):
-        return "%s.%s" % (self.content_type.model, self.field_name)
+        return f"{self.title} ({self.content_type})"
