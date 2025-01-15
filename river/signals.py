@@ -25,7 +25,10 @@ class SignalHandler:
         self.field_name = field_name
         self.transition_approval = transition_approval
         self.content_type = ContentType.objects.get_for_model(workflow_object.__class__)
-        self.workflow = Workflow.objects.get(content_type=self.content_type, field_name=self.field_name)
+        if getattr(workflow_object, "workflow_obj", None):
+            self.workflow = workflow_object.workflow_obj
+        else:
+            self.workflow = Workflow.objects.filter(content_type=self.content_type, field_name=field_name).first()
 
     def execute_hooks(self, hook_model, when, transition_approval_field):
         # TODO: Implement this
