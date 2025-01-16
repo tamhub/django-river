@@ -29,7 +29,10 @@ class ClassWorkflowObject(object):
         object_ids = list(approvals.values_list('object_id', flat=True))
         return self.wokflow_object_class.objects.filter(pk__in=object_ids)
 
-    def get_available_approvals(self, as_user):
+    def get_available_approvals(self, as_user, workflow=None):
+        if workflow:
+            self.workflow = workflow
+            
         return self._river_driver.get_available_approvals(as_user)
 
     @property
