@@ -146,7 +146,7 @@ class InstanceWorkflowObject:
         return State.objects.filter(pk__in=destination_state_ids)
 
     def get_available_approvals(self, as_user=None, destination_state=None):
-        approvals = self.class_workflow.get_available_approvals(as_user)
+        approvals = self.class_workflow.get_available_approvals(as_user, self.workflow)
         if destination_state:
             approvals = approvals.filter(transition_meta__destination_state=destination_state)
         else:
