@@ -1,8 +1,6 @@
 import logging
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.dispatch import Signal
-from river.models import Workflow
 from river.models.hook import BEFORE, AFTER
 from river.models.on_approved_hook import OnApprovedHook
 from river.models.on_complete_hook import OnCompleteHook
@@ -25,7 +23,7 @@ class SignalHandler:
         self.field_name = field_name
         self.transition_approval = transition_approval
         self.content_type = ContentType.objects.get_for_model(workflow_object.__class__)
-        self.workflow = Workflow.objects.get(content_type=self.content_type, field_name=self.field_name)
+        self.workflow = workflow_object.workflow_obj
 
     def execute_hooks(self, hook_model, when, transition_approval_field):
         # TODO: Implement this

@@ -1,8 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 
-from river.driver.mssql_driver import MsSqlDriver
 from river.driver.orm_driver import OrmDriver
-from river.models import State, TransitionApprovalMeta, Workflow, app_config, TransitionMeta
+from river.models import State, Workflow, TransitionMeta
 
 
 class ClassWorkflowObject(object):
@@ -10,19 +9,15 @@ class ClassWorkflowObject(object):
     def __init__(self, wokflow_object_class, field_name):
         self.wokflow_object_class = wokflow_object_class
         self.field_name = field_name
-        self.workflow = Workflow.objects.filter(field_name=self.field_name, content_type=self._content_type).first()
+        self.workflow = Workflow.objects.filter(field_name=self.field_name, content_type=self._content_type).first() # buggy
         self._cached_river_driver = None
 
     @property
     def _river_driver(self):
         if self._cached_river_driver:
             return self._cached_river_driver
-        else:
-            if app_config.IS_MSSQL:
-                self._cached_river_driver = MsSqlDriver(self.workflow, self.wokflow_object_class, self.field_name)
-            else:
-                self._cached_river_driver = OrmDriver(self.workflow, self.wokflow_object_class, self.field_name)
-            return self._cached_river_driver
+        self._cached_river_driver = OrmDriver(self.workflow, self.wokflow_object_class, self.field_name)
+        return self._cached_river_driver
 
     def get_on_approval_objects(self, as_user):
         approvals = self.get_available_approvals(as_user)

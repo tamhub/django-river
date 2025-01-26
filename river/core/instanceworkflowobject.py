@@ -24,10 +24,7 @@ class InstanceWorkflowObject:
         self.field_name = field_name
         self.class_workflow = getattr(workflow_object.__class__.river, field_name)
         self.content_type = app_config.CONTENT_TYPE_CLASS.objects.get_for_model(workflow_object)
-        if getattr(workflow_object, "workflow_obj", None):
-            self.workflow = workflow_object.workflow_obj
-        else:
-            self.workflow = Workflow.objects.filter(content_type=self.content_type, field_name=field_name).first()
+        self.workflow = workflow_object.workflow_obj
         self.initialized = False
 
     @transaction.atomic
@@ -140,28 +137,16 @@ class InstanceWorkflowObject:
             iteration__lte=iteration
         )
 
-    def get_available_states(self, as_user=None):
-        destination_state_ids = (self.get_available_approvals(as_user=as_user)
-                                 .filter(transition_meta__source_state=self.get_state())).values_list('transition_meta__destination_state', flat=True)
-        return State.objects.filter(pk__in=destination_state_ids)
-
-    def get_available_approvals(self, as_user=None, destination_state=None):
-        approvals = self.class_workflow.get_available_approvals(as_user)
-        if destination_state:
-            approvals = approvals.filter(transition_meta__destination_state=destination_state)
-        else:
-            approvals = approvals.filter(transition_meta__source_state=self.get_state())
-        return approvals
 
     @transaction.atomic
-    def approve(self, as_user, next_state=None):
-        available_approvals = self.get_available_approvals(as_user=as_user)
+    def approve(self, as_user, groups, next_state=None):
+        available_approvals = self.workflow_object.get_available_approvals(groups)
         if not available_approvals.exists():
             raise ValidationError("There is no available approval for the user.")
         if next_state:
             available_approvals = available_approvals.filter(transition_meta__destination_state=next_state)
             if not available_approvals.exists():
-                available_states = self.get_available_states(as_user)
+                available_states = self.workflow_object.get_available_states(groups)
                 raise ValidationError("Invalid state is given(%s). Valid states are %s" % (
                     next_state, ','.join(map(str, available_states))
                 ))

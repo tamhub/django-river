@@ -30,16 +30,13 @@ class TransitionApprovalMeta(BaseModel):
 
     transition_meta = models.ForeignKey(TransitionMeta, verbose_name=_("Transition Meta"), related_name='transition_approval_meta', on_delete=CASCADE)
 
-    permissions = models.ManyToManyField(app_config.PERMISSION_CLASS, verbose_name=_('Permissions'), blank=True)
     groups = models.ManyToManyField(app_config.GROUP_CLASS, verbose_name=_('Groups'), blank=True)
     priority = models.IntegerField(default=0, verbose_name=_('Priority'), null=True)
     parents = models.ManyToManyField('self', verbose_name='parents', related_name='children', symmetrical=False, db_index=True, blank=True)
 
     def __str__(self):
-        return 'Transition: %s,Permissions: %s, Groups: %s, Order: %s' % (
-            self.transition_meta,
-            ','.join(self.permissions.values_list('name', flat=True)),
-            ','.join(self.groups.values_list('name', flat=True)), self.priority)
+        return 'Transition:  %s, Groups: %s, Order: %s' % (
+            self.transition_meta,','.join(self.groups.values_list('name', flat=True)), self.priority)
 
 
 def post_save_model(sender, instance, *args, **kwargs):

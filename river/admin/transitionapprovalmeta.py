@@ -7,7 +7,7 @@ from river.models.transitionapprovalmeta import TransitionApprovalMeta
 class TransitionApprovalMetaForm(forms.ModelForm):
     class Meta:
         model = TransitionApprovalMeta
-        fields = ('workflow', 'transition_meta', 'permissions', 'groups', 'priority')
+        fields = ('workflow', 'transition_meta', 'groups', 'priority')
 
 
 class TransitionApprovalMetaAdmin(admin.ModelAdmin):
