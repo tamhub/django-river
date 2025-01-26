@@ -77,7 +77,6 @@ class InstanceWorkflowObject:
         )
 
         if created:
-          transition_approval.permissions.add(*transition_approval_meta.permissions.all())
           transition_approval.groups.add(*transition_approval_meta.groups.all())
 
     @property
